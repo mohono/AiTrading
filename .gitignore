@@ -1,0 +1,33 @@
+# Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+.venv/
+.pytest_cache/
+.ruff_cache/
+.mypy_cache/
+.hypothesis/
+.coverage
+htmlcov/
+build/
+dist/
+
+# Market data: re-downloadable and verified by checksums. Only the manifests are versioned.
+data/*
+!data/manifests/
+*.parquet
+*.zip
+!tests/fixtures/**/*.zip
+!tests/fixtures/**/*.parquet
+
+# Secrets and local config (never commit)
+.env
+.env.*
+*.key
+*.pem
+
+# Editors / OS
+.idea/
+.vscode/
+.DS_Store
+*.swp
