@@ -1,0 +1,1155 @@
+<!doctype html>
+<html lang="fa" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>برنامه‌ی مرحله‌ی ۰.۱ — پژوهش فارکس</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Vazirmatn:wght@400;600;700&amp;display=swap">
+<style>
+:root {
+  color-scheme: light;
+  --bg: #f9f9f7;
+  --ink: #0b0b0b;
+  --ink-2: #52514e;
+  --rule: #e1e0d9;
+  --axis: #c3c2b7;
+  --code-bg: #f1f0ec;
+  --link: #1c5cab;
+  --series-1: #2a78d6;
+  --series-2: #eb6834;
+  --good: #0ca30c;
+  --warn: #fab219;
+  --bad: #d03b3b;
+  --good-tint: #e9f4e9;
+  --warn-tint: #fdf4dd;
+  --bad-tint: #fbeaea;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    color-scheme: dark;
+    --bg: #0d0d0d;
+    --ink: #f4f3ef;
+    --ink-2: #c3c2b7;
+    --rule: #2c2c2a;
+    --axis: #45453f;
+    --code-bg: #1f1f1d;
+    --link: #86b6ef;
+    --series-1: #3987e5;
+    --series-2: #d95926;
+    --good-tint: #142814;
+    --warn-tint: #2d2410;
+    --bad-tint: #2d1515;
+  }
+}
+:root[data-theme="dark"] {
+  color-scheme: dark;
+  --bg: #0d0d0d;
+  --ink: #f4f3ef;
+  --ink-2: #c3c2b7;
+  --rule: #2c2c2a;
+  --axis: #45453f;
+  --code-bg: #1f1f1d;
+  --link: #86b6ef;
+  --series-1: #3987e5;
+  --series-2: #d95926;
+  --good-tint: #142814;
+  --warn-tint: #2d2410;
+  --bad-tint: #2d1515;
+}
+* { box-sizing: border-box; }
+html { -webkit-text-size-adjust: 100%; }
+body {
+  margin: 0;
+  background: var(--bg);
+  color: var(--ink);
+  font-family: "Vazirmatn", Tahoma, "Noto Sans Arabic", sans-serif;
+  font-size: 17px;
+  line-height: 1.9;
+}
+main { max-width: 39rem; margin: 0 auto; padding: 2.5rem 1rem 3rem; }
+h1 { font-size: 1.65rem; line-height: 1.5; margin: .3rem 0 .6rem; font-weight: 700; }
+h2 {
+  font-size: 1.3rem; line-height: 1.5; font-weight: 700;
+  margin: 2.8rem 0 .8rem; padding-top: 1.2rem; border-top: 1px solid var(--rule);
+}
+h3 { font-size: 1.08rem; line-height: 1.6; font-weight: 600; margin: 1.9rem 0 .5rem; }
+h4 { font-size: 1rem; font-weight: 600; margin: 1.4rem 0 .3rem; }
+p, ul, ol, dl { margin: .6rem 0; }
+ul, ol { padding-inline-start: 1.4rem; }
+li { margin: .3rem 0; }
+a { color: var(--link); text-underline-offset: 3px; }
+strong { font-weight: 600; }
+.kicker, .meta { color: var(--ink-2); font-size: .92rem; margin: 0; }
+.lead { font-size: 1.04rem; }
+.note { color: var(--ink-2); font-size: .92rem; }
+code, pre {
+  font-family: ui-monospace, "SFMono-Regular", Menlo, Consolas, "DejaVu Sans Mono", monospace;
+}
+code {
+  direction: ltr; unicode-bidi: isolate; font-size: .84em;
+  background: var(--code-bg); padding: .05em .35em; border-radius: 4px;
+}
+pre {
+  direction: ltr; text-align: left; background: var(--code-bg);
+  padding: .8rem 1rem; border-radius: 6px; overflow-x: auto; line-height: 1.6;
+}
+pre code { background: none; padding: 0; font-size: .82rem; }
+.table-wrap { overflow-x: auto; margin: .9rem 0; }
+table { width: 100%; border-collapse: collapse; font-size: .92rem; font-variant-numeric: tabular-nums; }
+th, td { text-align: start; vertical-align: top; padding: .45rem .55rem; border-bottom: 1px solid var(--rule); }
+th { font-weight: 600; color: var(--ink-2); border-bottom-color: var(--axis); }
+td.num, th.num { direction: ltr; text-align: right; white-space: nowrap; }
+blockquote {
+  margin: .8rem 0; padding: .3rem .9rem;
+  border-inline-start: 3px solid var(--axis); color: var(--ink-2);
+}
+blockquote[dir="ltr"] {
+  font-family: system-ui, -apple-system, "Segoe UI", sans-serif;
+  font-size: .9rem; line-height: 1.6;
+}
+.badge {
+  display: inline-flex; align-items: center; gap: .4em; white-space: nowrap;
+  padding: 0 .6rem; border-radius: 999px; border: 1px solid var(--rule);
+  font-size: .85rem; line-height: 1.8; color: var(--ink);
+}
+.badge::before { content: ""; width: .55em; height: .55em; border-radius: 50%; background: var(--ink-2); }
+.badge.ok { background: var(--good-tint); }
+.badge.ok::before { background: var(--good); }
+.badge.warn { background: var(--warn-tint); }
+.badge.warn::before { background: var(--warn); }
+.badge.bad { background: var(--bad-tint); }
+.badge.bad::before { background: var(--bad); }
+nav.toc { margin: 1.5rem 0; padding: .5rem 1rem; border: 1px solid var(--rule); border-radius: 6px; }
+nav.toc p { margin: .2rem 0; font-weight: 600; }
+nav.toc ol { margin: .2rem 0 .4rem; }
+nav.toc li { margin: .1rem 0; }
+nav.toc a { text-decoration: none; }
+figure { margin: 1.3rem 0; }
+figure svg { display: block; width: 100%; height: auto; direction: ltr; }
+figure svg text { font-family: "Vazirmatn", Tahoma, sans-serif; }
+figcaption { font-size: .92rem; color: var(--ink-2); margin-top: .5rem; }
+.legend { display: flex; flex-wrap: wrap; gap: .3rem 1.4rem; list-style: none; padding: 0; margin: .5rem 0 0; font-size: .9rem; }
+.legend li { display: inline-flex; align-items: center; gap: .45em; margin: 0; }
+.sw { display: inline-block; width: .9em; height: .9em; border-radius: 3px; }
+.sw.s1, svg .s1 { background: var(--series-1); fill: var(--series-1); }
+.sw.s2, svg .s2 { background: var(--series-2); fill: var(--series-2); }
+svg .tick { fill: var(--ink-2); font-size: 11px; }
+svg .lbl { fill: var(--ink); font-size: 12px; }
+svg .axis { stroke: var(--axis); stroke-width: 1; }
+dl.glossary dt { font-weight: 600; margin-top: 1.1rem; }
+dl.glossary dd { margin: .15rem 0 0; }
+ul.check { list-style: none; padding-inline-start: .2rem; }
+ul.check li::before { content: "☐"; margin-inline-end: .5em; color: var(--ink-2); }
+footer {
+  margin-top: 3rem; padding-top: 1rem; border-top: 1px solid var(--rule);
+  font-size: .86rem; color: var(--ink-2); line-height: 1.9;
+}
+@media (max-width: 30rem) {
+  body { font-size: 16px; }
+  main { padding: 1.6rem 1rem 2.5rem; }
+}
+@media print {
+  html:root:not([data-print]) {
+    --bg: #fff; --ink: #000; --ink-2: #333; --rule: #ccc; --axis: #999; --code-bg: #f3f3f3;
+    --link: #000; --series-1: #2a78d6; --series-2: #eb6834;
+    --good-tint: #fff; --warn-tint: #fff; --bad-tint: #fff;
+  }
+  body { font-size: 10.5pt; line-height: 1.7; }
+  main { max-width: none; padding: 0; }
+  nav.toc { display: none; }
+  a { text-decoration: none; }
+  pre { white-space: pre-wrap; word-break: break-word; }
+  h2, h3, h4 { break-after: avoid; }
+  table, figure, pre, blockquote { break-inside: avoid; }
+}
+</style>
+</head>
+<body>
+<main>
+
+<header>
+  <p class="kicker">پژوهش معاملات سیستماتیک فارکس · فاز ۰ (پایه‌ها) · مرحله‌ی ۰.۱</p>
+  <h1>برنامه‌ی کامل پروژه و برنامه‌ی اجرایی مرحله‌ی ۰.۱</h1>
+  <p class="meta">
+    <span class="badge warn">در انتظار تأیید شما</span>
+    · تاریخ: <bdi>2026-10-03</bdi>
+    · حالت توقف: <bdi>STEP</bdi>
+    · آزمایش‌ها تا امروز: ۰
+  </p>
+  <p class="lead">
+    این سند را پیش از تأیید بخوانید. همه‌ی آنچه قرار است انجام شود، دلیل هر کار، و
+    تصمیم‌هایی که با پاسخ‌های شما گرفته شد اینجاست. تا وقتی تأیید نکنید، هیچ تغییری
+    جز اضافه شدن همین فایل به مخزن انجام نمی‌شود.
+  </p>
+</header>
+
+<nav class="toc" aria-label="فهرست">
+  <p>فهرست</p>
+  <ol>
+    <li><a href="#s1">خلاصه در یک نگاه</a></li>
+    <li><a href="#s2">این سند چیست و پروژه به کجا می‌رود</a></li>
+    <li><a href="#s3">چه کاری انجام خواهد شد (مرحله‌ی ۰.۱)</a></li>
+    <li><a href="#s4">یافته‌های بررسی اولیه</a></li>
+    <li><a href="#s5">تصمیم‌ها و فرض‌ها</a></li>
+    <li><a href="#s6">محدودیت‌ها و ریسک‌ها</a></li>
+    <li><a href="#s7">مفاهیم جدید</a></li>
+    <li><a href="#s8">خودت بررسی کن</a></li>
+    <li><a href="#s9">قدم بعدی و سؤال‌های باز</a></li>
+  </ol>
+</nav>
+
+<!-- ============================================================ -->
+<section id="s1">
+<h2>۱. خلاصه در یک نگاه</h2>
+<p>
+  این سند دو چیز را توضیح می‌دهد: نقشه‌ی کامل پروژه از فاز ۰ تا ۵، و کارهای دقیق
+  مرحله‌ی ۰.۱ که بعد از تأیید شما اجرا می‌شود. در بررسی اولیه معلوم شد پوشه‌ی مخزن
+  هنوز باقی‌مانده‌های پروژه‌ی کریپتوی قبلی را دارد و تاریخچه‌ی کد آن فقط در
+  <bdi>reflog</bdi> محلی مانده است. همچنین شرایط استفاده‌ی <bdi>Dukascopy</bdi>، که
+  brief به‌عنوان منبع داده پیشنهاد کرده بود، دانلود خودکار و ساختن پایگاه داده از
+  داده‌هایش را ممنوع می‌کند؛ برای همین منبع داده نرخ‌های مرجع بانک مرکزی اروپا
+  (<bdi>ECB</bdi>) از سال ۱۹۹۹ شد. تصمیم‌های اصلی دیگر:
+  <bdi>HOLDOUT_START = 2021-01-01</bdi>، سرمایه‌ی شبیه‌سازی <bdi>USD 100,000</bdi>،
+  پروفایل هزینه‌ی محافظه‌کار، هشدار با تلگرام، و منطقه‌ی زمانی
+  <bdi>Asia/Tehran</bdi>. حکم: منتظر تأیید شما؛ بعد از تأیید، مرحله‌ی ۰.۱ (بایگانی،
+  ساختن <code>CLAUDE.md</code> و <code>PROGRESS.md</code>، و یک commit) اجرا و کار
+  دوباره برای تأیید متوقف می‌شود.
+</p>
+</section>
+
+<!-- ============================================================ -->
+<section id="s2">
+<h2>۲. این سند چیست و پروژه به کجا می‌رود</h2>
+
+<h3>۲.۱ هدف پروژه</h3>
+<p>
+  هدف، پیدا کردن پاسخی صادقانه به یک سؤال است: آیا یک سیستم معاملاتی قاعده‌مند روی
+  ۷ جفت‌ارز اصلی
+  (<bdi>EURUSD, GBPUSD, USDJPY, AUDUSD, USDCAD, USDCHF, NZDUSD</bdi>)،
+  بعد از کسر همه‌ی هزینه‌ها، مزیت واقعی دارد؟ همه‌چیز فقط روی داده‌ی تاریخی و حساب
+  دمو انجام می‌شود. «مزیتی پیدا نشد» اگر خوب مستند شده باشد، نتیجه‌ای معتبر و
+  ارزشمند است. سود هرگز فرض یا وعده داده نمی‌شود.
+</p>
+
+<h3>۲.۲ اصل معماری: چه کسی چه کاری می‌کند</h3>
+<ul>
+  <li>هسته‌ی معاملاتی کد پایتونِ <strong>قطعی</strong> و آزموده است. «قطعی» یعنی با
+    ورودی یکسان همیشه خروجی یکسان می‌دهد و می‌شود آن را دقیق تست کرد.</li>
+  <li>نقش من (Claude) پژوهشگر، مهندس و اپراتور دور این هسته است: کد می‌نویسم، آزمایش
+    طراحی و اجرا می‌کنم، گزارش می‌سازم و سیستم را نگه می‌دارم.</li>
+  <li>من هرگز تصمیم معاملاتی سلیقه‌ای نمی‌گیرم و هرگز مستقیم سفارش نمی‌فرستم. هر سفارش
+    را کد قطعی می‌سازد و باید از یک ماژول ریسک جداگانه عبور کند.</li>
+  <li>شما هر مرحله را می‌فهمید و تأیید می‌کنید. شفافیت از سرعت مهم‌تر است.</li>
+</ul>
+
+<h3>۲.۳ قاعده‌های سخت به زبان ساده</h3>
+<p>این قاعده‌ها در هیچ شرایطی شکسته نمی‌شوند. ستون دوم می‌گوید هر کدام در عمل یعنی چه.</p>
+<div class="table-wrap">
+<table>
+  <thead><tr><th>قاعده</th><th>در عمل یعنی</th></tr></thead>
+  <tbody>
+    <tr><td>۱. فقط دمو</td><td>هیچ کلید یا آدرس حساب پول واقعی استفاده نمی‌شود. اگر چیزی شبیه حساب واقعی باشد، کار متوقف می‌شود و از شما می‌پرسم.</td></tr>
+    <tr><td>۲. عدد ساختگی ممنوع</td><td>هر عدد در گزارش از خروجی کد در پوشه‌ی <code>results/</code> می‌آید و گزارش، فایل منبع و کامیت را ذکر می‌کند. چیزی که محاسبه نشده، همین‌طور گفته می‌شود.</td></tr>
+    <tr><td>۳. نگاه به آینده ممنوع</td><td>تصمیمِ لحظه‌ی <bdi>t</bdi> فقط از داده‌ای استفاده می‌کند که تا آن لحظه منتشر شده، و معامله بعداً پر می‌شود. تست خودکار این را تضمین می‌کند.</td></tr>
+    <tr><td>۴. هزینه‌ها همیشه روشن</td><td>اسپرد، کمیسیون، سوآپ و slippage در هر بک‌تست هست. نتیجه‌ی بدون هزینه فقط با برچسب «تشخیصی» نشان داده می‌شود.</td></tr>
+    <tr><td>۵. holdout مقدس است</td><td>داده‌ی از <bdi>2021-01-01</bdi> به بعد در دوره‌ی توسعه اصلاً بارگذاری نمی‌شود. برای هر نسخه‌ی پیش‌ثبت‌شده فقط یک بار و با تأیید کتبی شما اجرا و ثبت می‌شود.</td></tr>
+    <tr><td>۶. ثبت همه‌ی آزمایش‌ها</td><td>هر آزمایش در <code>experiments/log.jsonl</code> ثبت می‌شود و هیچ ردیفی حذف یا ویرایش نمی‌شود. هر گزارش تعداد کل آزمایش‌ها را می‌گوید.</td></tr>
+    <tr><td>۷. پیش‌ثبت قبل از آزمون</td><td>فرضیه، شبکه‌ی پارامترها، معیارها و شرط قبول/رد قبل از اجرا نوشته و تأیید می‌شوند و بعد از دیدن نتیجه عوض نمی‌شوند.</td></tr>
+    <tr><td>۸. ماژول ریسک جدا</td><td>حدود ریسک در ماژولی جدا هستند و هر سفارش باید از آن عبور کند. کد استراتژی نمی‌تواند آن را دور بزند یا تغییر دهد.</td></tr>
+    <tr><td>۹. تغییر قاعده فقط از مسیر پژوهش</td><td>مشاهدات در <code>journal/</code> نوشته می‌شوند و مستقیم هیچ قاعده‌ای را عوض نمی‌کنند.</td></tr>
+    <tr><td>۱۰. اسرار</td><td>توکن و رمز فقط در <code>.env</code> یا متغیر محیطی هستند و هرگز چاپ، لاگ یا commit نمی‌شوند.</td></tr>
+    <tr><td>۱۱. توقف در نقاط بازبینی</td><td>در حالت <bdi>STEP</bdi> بعد از هر مرحله توقف می‌کنم و منتظر تأیید می‌مانم.</td></tr>
+    <tr><td>۱۲. بپرس، حدس نزن</td><td>هر فرضی که روی نتایج اثر دارد پرسیده می‌شود و پاسخش در <code>PROGRESS.md</code> ثبت می‌شود.</td></tr>
+    <tr><td>۱۳. صداقت</td><td>نتیجه‌ی بد و تست ناموفق صریح گزارش می‌شود. نمونه‌ی کوتاه دلیل سودآوری نیست. واقعیت، تخمین و نظر از هم جدا می‌شوند.</td></tr>
+    <tr><td>۱۴. بهداشت سرور</td><td><bdi>sudo</bdi>، نصب بسته‌ی سیستمی، باز کردن پورت و حذف هر چیزی بیرون از مخزن فقط با اجازه‌ی شما. هرگز force-push. هرگز حذف گزارش‌ها و لاگ آزمایش‌ها.</td></tr>
+    <tr><td>۱۵. صلاحیت سرویس‌دهنده‌ها <span class="badge warn">پیشنهادی، جدید</span></td><td>همان قواعد انطباقی که تأیید کردید. متن دقیقش در <a href="#s3-2">بخش ۳.۲</a> است.</td></tr>
+  </tbody>
+</table>
+</div>
+
+<h3>۲.۴ نقشه‌ی راه: فازها و مراحل</h3>
+<p>
+  جدول‌های زیر کل مسیر را نشان می‌دهند. هر جا انتخاب <bdi>ECB</bdi> چیزی را عوض
+  می‌کند، با «تغییر به‌خاطر ECB» مشخص شده است. فقط مرحله‌ی ۰.۱ الان اجرا می‌شود؛ هر
+  مرحله‌ی بعدی برنامه و تأیید جداگانه دارد.
+</p>
+
+<h4>فاز ۰ — پایه‌ها</h4>
+<div class="table-wrap">
+<table>
+  <thead><tr><th>مرحله</th><th>چه کاری</th><th>خروجی</th></tr></thead>
+  <tbody>
+    <tr><td>۰.۱</td><td>ثبت تصمیم‌های پایه (همین سند) و بایگانی پروژه‌ی قبلی.</td><td><code>CLAUDE.md</code>، <code>PROGRESS.md</code></td></tr>
+    <tr><td>۰.۲</td><td>اسکلت مخزن: محیط <bdi>uv</bdi> با <bdi>Python 3.12</bdi>، <bdi>pytest</bdi> برای تست، <bdi>ruff</bdi> برای کیفیت کد، <code>.gitignore</code>، <code>README.md</code>، و پوشه‌های پروژه.</td><td>پروژه‌ای که تست‌هایش اجرا و سبز می‌شوند</td></tr>
+    <tr><td>۰.۳</td><td>جعبه‌ابزار گزارش: یک قالب HTML فارسی، <code>src/reporting/build.py</code> که گزارش را از فایل‌های نتایج می‌سازد، و <code>reports/index.html</code>. بعد گزارش فاز ۰ (نقشه‌ی پروژه، نقشه‌ی راه، واژه‌نامه). همین سند پیش‌نمایشی از سبک آن است.</td><td>قالب گزارش که شما تأییدش می‌کنید</td></tr>
+  </tbody>
+</table>
+</div>
+<p><strong>شرط خروج:</strong> تأیید برنامه، تصمیم‌ها و قالب گزارش؛ سپس تگ <code>phase-0-complete</code>.</p>
+
+<h4>فاز ۱ — داده، موتور بک‌تست، مدل هزینه</h4>
+<div class="table-wrap">
+<table>
+  <thead><tr><th>مرحله</th><th>چه کاری</th><th>خروجی</th></tr></thead>
+  <tbody>
+    <tr><td>۱.۱</td><td>دریافت نرخ‌های <bdi>ECB</bdi> برای ۷ ارز در برابر یورو و ساختن ۷ جفت دلاری، و دریافت نرخ‌های بهره‌ی <bdi>BIS</bdi>. فقط تا <bdi>2020-12-31</bdi> دانلود می‌شود تا داده‌ی holdout اصلاً وارد سرور نشود. داده‌ی خام دست‌نخورده می‌ماند و نسخه‌ی پردازش‌شده <bdi>parquet</bdi> است. منبع، طرف قیمت، ساعت و قرارداد «بسته‌شدن روزانه» ثبت می‌شود. <em>تغییر به‌خاطر ECB:</em> به‌جای <bdi>OHLC</bdi> روزانه، روزی یک نرخ میانی داریم.</td><td>داده‌ی توسعه و سند منبع و قراردادها</td></tr>
+    <tr><td>۱.۲</td><td>کنترل کیفیت داده: شکاف‌ها، ردیف‌های تکراری، جهش‌ها، دقت گرد کردن، سازگاری نرخ‌های مثلثی، و مقایسه با یک منبع مستقل. <em>تغییر به‌خاطر ECB:</em> چک‌های مخصوص <bdi>OHLC</bdi> کنار می‌روند.</td><td>گزارش کنترل کیفیت با نمودار</td></tr>
+    <tr><td>۱.۳</td><td>موتور بک‌تست: پر شدن در fixing روز کاری بعد، hook تعیین حجم، مدل هزینه (اسپرد، کمیسیون، سوآپ شبانه با سه‌برابرِ چهارشنبه، slippage، و پارامتر اسپرد بازتر نزدیک رول‌اوور)، حسابداری دلاری (اندازه‌ی پیپ، جفت‌های ین، تبدیل ارز)، و گرد کردن حجم به <bdi>1,000</bdi> واحد. شواهد منتشرشده‌ی اسپرد و کارمزد سوآپ هم جمع می‌شود.</td><td>موتور و مدل هزینه‌ی مستند</td></tr>
+    <tr><td>۱.۴</td><td>اعتبارسنجی موتور: تست‌های واحد (کشف نگاه به آینده، حسابداری هزینه، مثال‌هایی که با دست حساب شده‌اند) و استراتژی‌های سلامت (پایین جدول).</td><td>همه‌ی تست‌ها سبز</td></tr>
+  </tbody>
+</table>
+</div>
+<p>
+  <strong>استراتژی‌های سلامت</strong> چک می‌کنند که موتور درست حساب می‌کند: «همیشه
+  بی‌پوزیشن» باید سود و زیان صفر بدهد؛ «ورود تصادفی» باید به‌طور میانگین حدود همان
+  هزینه‌ها ضرر کند؛ و «خرید و نگه‌داری یک جفت» باید همان مسیر قیمت را منهای سوآپ و
+  هزینه بازسازی کند.
+</p>
+<p><strong>شرط خروج:</strong> همه‌ی تست‌ها سبز، چک‌های سلامت درست، و تأیید شما.</p>
+
+<h4>فاز ۲ — پژوهش استراتژی پایه (فقط داده‌ی توسعه)</h4>
+<div class="table-wrap">
+<table>
+  <thead><tr><th>مرحله</th><th>چه کاری</th><th>خروجی</th></tr></thead>
+  <tbody>
+    <tr><td>۲.۱</td><td>پیش‌ثبت: مومنتوم سری زمانی روی ۷ جفت با حجم‌دهی بر اساس هدف نوسان (مرجع: <bdi>Moskowitz, Ooi &amp; Pedersen 2012</bdi>)، یک شبکه‌ی پارامتر کوچک، معیارها، شرط قبول/رد، و حدود ریسک پیشنهادی. پیش از هر اجرا با تأیید شما.</td><td>فایل پیش‌ثبت در <code>experiments/prereg/</code></td></tr>
+    <tr><td>۲.۲</td><td>بک‌تست <bdi>walk-forward</bdi> با هزینه‌ی کامل؛ نتایج هر جفت و کل پرتفوی؛ مقایسه با دو مبنا: نقد (بازده صفر) و ورود تصادفی با همان قواعد ریسک و خروج (با تعداد زیادی seed).</td><td>گزارش نتایج</td></tr>
+    <tr><td>۲.۳</td><td>استحکام: نقشه‌ی حرارتی همسایگی پارامترها، هزینه‌ی دوبرابر، ثبات در زیردوره‌ها، فاصله‌ی اطمینان <bdi>bootstrap</bdi> برای Sharpe، آماره‌ی <bdi>t</bdi>، تعداد کل آزمایش‌ها، و <bdi>deflated Sharpe</bdi>.</td><td>گزارش استحکام</td></tr>
+    <tr><td>۲.۴</td><td>یادداشت تصمیم در برابر معیارهای پیش‌ثبت‌شده و درخواست اجازه‌ی اجرای holdout.</td><td>یادداشت تصمیم</td></tr>
+    <tr><td>۲.۵</td><td>اجرای holdout، فقط یک بار، و حکم نهایی. اگر رد شد: مستندسازی و پیشنهاد فرضیه‌ی بعدی با هم.</td><td>حکم نهایی</td></tr>
+  </tbody>
+</table>
+</div>
+<p>
+  <strong>معیارها:</strong> <bdi>CAGR</bdi>، نوسان سالانه، <bdi>Sharpe</bdi>،
+  <bdi>Sortino</bdi>، بیشینه‌ی افت سرمایه و مدتش، نرخ برد، <bdi>profit factor</bdi>،
+  گردش معاملات، کشش هزینه، میزان مواجهه، و جدول سال‌به‌سال.
+  <strong>حدود ریسک پیشنهادی:</strong> ریسک هر پوزیشن، سقف اهرم ناخالص، سقف مواجهه
+  با هر ارز، حد زیان روزانه، و فیوز افت سرمایه.
+</p>
+<p><strong>شرط خروج:</strong> قبولی در معیارهای پیش‌ثبت‌شده روی داده‌ی توسعه و holdout، و تأیید شما.</p>
+
+<h4>فاز ۳ — تست فوروارد روی حساب دمو (۳ تا ۶ ماه)</h4>
+<div class="table-wrap">
+<table>
+  <thead><tr><th>مرحله</th><th>چه کاری</th><th>خروجی</th></tr></thead>
+  <tbody>
+    <tr><td>۳.۱</td><td>انتخاب بروکر با شما (مقایسه‌ی نوع API، نیاز سیستم‌عامل، داده و هزینه) و ساختن رابط بروکر. <em>شرط جدید:</em> بروکر باید صریحاً ساکنان کشور شما را بپذیرد.</td><td>adapter بروکر</td></tr>
+    <tr><td>۳.۲</td><td>دروازه‌ی ریسک به‌صورت ماژول یا فرایند جدا: حدود سخت، <bdi>kill switch</bdi>، و قطع‌کننده‌ی افت سرمایه. تست‌هایی که عمداً می‌خواهند از هر حد عبور کنند.</td><td>دروازه‌ی ریسک آزموده</td></tr>
+    <tr><td>۳.۳</td><td>سرویس اجرا روی سرور: بعد از انتشار fixing روز <bdi>D</bdi> تصمیم گرفته می‌شود، و روز <bdi>D+1</bdi> حدود ساعت <bdi>14:15</bdi> به وقت فرانکفورت اجرا می‌شود؛ همان لحظه‌ای که بک‌تست معامله را پر می‌کند. زمان‌بندی در برابر تغییر ساعت تابستانی مقاوم است. آخر هفته و تعطیلات رد می‌شوند، همه‌چیز لاگ می‌شود، خطاها در تلگرام هشدار داده می‌شوند، و پوزیشن‌های بروکر هر روز با پوزیشن‌های مورد انتظار تطبیق داده می‌شوند. <em>تغییر به‌خاطر ECB:</em> به‌جای <bdi>17:00</bdi> نیویورک.</td><td>سرویس زمان‌بندی‌شده</td></tr>
+    <tr><td>۳.۴</td><td>شبیه‌سازی سایه: موتور بک‌تست روی همان دوره‌ی زنده اجرا و با fillهای دمو مقایسه می‌شود.</td><td>گزارش ردیابی</td></tr>
+    <tr><td>۳.۵</td><td>گزارش هفتگی فارسی خودکار از روی لاگ‌ها، و در پایان گزارش جمع‌بندی فاز ۳.</td><td>گزارش‌های هفتگی</td></tr>
+  </tbody>
+</table>
+</div>
+<p>
+  <strong>شرط خروج:</strong> رفتار زنده در حد تحمل توافق‌شده با شبیه‌سازی بخواند،
+  نتایج در محدوده‌ی مورد انتظار بک‌تست باشد، و حادثه‌ی حل‌نشده‌ای نماند.
+</p>
+
+<h4>فاز ۴ — لایه‌های LLM به‌صورت آزمایش A/B</h4>
+<ul>
+  <li>هر بار یک فرضیه، مثلاً مرور روزانه‌ی عملیات با <code>claude -p</code>، فیلتر ریسک
+    رویدادها، یا یک سیگنال متنی؛ با یک معیار قابل اندازه‌گیری، پیش‌ثبت می‌شود.</li>
+  <li>LLM هرگز با بروکر حرف نمی‌زند. خروجی‌اش یا مشورتی است یا فیلتری که کد قطعی مصرف
+    می‌کند. همه‌ی ورودی‌ها و خروجی‌هایش لاگ می‌شوند.</li>
+  <li>سیگنال‌های متنی فقط روی داده‌ی بعد از تاریخ دانش مدل ارزیابی می‌شوند.</li>
+  <li>یک لایه فقط وقتی می‌ماند که معیار پیش‌ثبت‌شده را به‌طور قابل اندازه‌گیری بهتر کند.</li>
+</ul>
+
+<h4>فاز ۵ — پول واقعی</h4>
+<p>
+  خارج از محدوده‌ی این پروژه. هیچ آمادگی یا پیشنهادی برای آن داده نمی‌شود، مگر اینکه
+  خودتان صریحاً آن را در <code>PROGRESS.md</code> باز کنید.
+</p>
+
+<h3>۲.۵ روش کار در هر مرحله</h3>
+<ol>
+  <li>برنامه‌ی فارسی: چه، چرا، چگونه، و چطور می‌فهمیم درست شد.</li>
+  <li>تأیید شما (در حالت <bdi>STEP</bdi>).</li>
+  <li>اجرا.</li>
+  <li>تست‌ها سبز.</li>
+  <li>ثبت آزمایش‌ها در <code>experiments/log.jsonl</code>.</li>
+  <li>ساخت گزارش مرحله به‌صورت HTML فارسی.</li>
+  <li>به‌روزرسانی <code>reports/index.html</code> و <code>PROGRESS.md</code>.</li>
+  <li>commit با پیام <code>phase-X.Y: …</code>.</li>
+  <li>اعلام مسیر گزارش و روش باز کردنش، و توقف.</li>
+</ol>
+<p class="note">
+  در هر دو حالت <bdi>STEP</bdi> و <bdi>PHASE</bdi>، برای اجرای holdout، تغییر تنظیمات
+  ریسک، راه‌اندازی بروکر یا اطلاعات ورود، و هر سؤال مشمول قاعده‌ی ۱۲ همیشه توقف می‌کنم.
+</p>
+</section>
+
+<!-- ============================================================ -->
+<section id="s3">
+<h2>۳. چه کاری انجام خواهد شد (مرحله‌ی ۰.۱)</h2>
+<ul>
+  <li><strong>چه:</strong> بایگانی پروژه‌ی قبلی، ذخیره‌ی brief به‌عنوان
+    <code>CLAUDE.md</code>، ساخت <code>PROGRESS.md</code> با همه‌ی تصمیم‌ها، و یک commit.</li>
+  <li><strong>چرا:</strong> هر جلسه‌ی بعدی با خواندن این دو فایل شروع می‌شود. تصمیم‌هایی
+    که روی نتایج اثر دارند باید پیش از نوشتن هر کدی مکتوب و تأییدشده باشند.</li>
+  <li><strong>چطور می‌فهمیم درست شد:</strong> چک‌های <a href="#s8">بخش ۸</a>.</li>
+</ul>
+
+<h3>۳.۱ بایگانی پروژه‌ی قبلی (هیچ داده یا لاگی پاک نمی‌شود)</h3>
+<div class="table-wrap">
+<table>
+  <thead><tr><th>چه چیزی</th><th class="num">اندازه</th><th>چه می‌شود</th></tr></thead>
+  <tbody>
+    <tr><td><code>data/</code>: داده‌ی Binance، لاگ‌ها، نتایج <bdi>E0001–E0012</bdi></td><td class="num">1.4G</td><td>انتقال به پوشه‌ی بایگانی</td></tr>
+    <tr><td>تاریخچه‌ی ۷۲ کامیتی (تا <code>8168adc</code>)</td><td class="num">~4 MB</td><td>تگ محلی و فایل <code>history.bundle</code> در بایگانی</td></tr>
+    <tr><td><code>.venv/</code>: محیط پایتون قدیمی</td><td class="num">392M</td><td>حذف (قابل بازسازی)</td></tr>
+    <tr><td><code>.hypothesis/</code>، <code>.pytest_cache/</code>، <code>.ruff_cache/</code></td><td class="num">≤ 604K</td><td>حذف (کش ابزارها)</td></tr>
+    <tr><td><code>__pycache__</code> زیر <code>src/</code> و <code>tests/</code></td><td class="num">~2.5M</td><td>حذف (فقط فایل‌های <code>.pyc</code>؛ منبعشان در تاریخچه محفوظ است)</td></tr>
+  </tbody>
+</table>
+</div>
+<pre><code>ARCH=/root/hermes/_archive/aitrading-crypto
+mkdir -p "$ARCH"
+git tag -a archive/crypto-2026-10-03 8168adc -m "Previous crypto project, kept before the FX restart"
+git bundle create "$ARCH/history.bundle" refs/tags/archive/crypto-2026-10-03
+git bundle verify "$ARCH/history.bundle"
+mv data "$ARCH/data"
+find src tests -type f ! -name '*.pyc'      # must print nothing before deleting
+find src tests -name __pycache__ -type d -prune -exec rm -rf {} +
+find src tests -type d -empty -delete
+rm -rf .venv .hypothesis .pytest_cache .ruff_cache</code></pre>
+<ul>
+  <li>تگ فقط محلی است و <strong>هرگز push نمی‌شود</strong>، چون متن‌های پروژه‌ی قبلی
+    جزئیات شخصی و زیرساختی دارند.</li>
+  <li>فایل <code>history.bundle</code> یک نسخه‌ی کامل و مستقل از ۷۲ کامیت است و حتی اگر
+    مخزن عوض شود، باقی می‌ماند.</li>
+  <li>انتقال <code>data/</code> روی همان دیسک فقط یک تغییر نام است و فضایی آزاد
+    نمی‌کند. حذف <code>.venv</code> حدود <bdi>392 MB</bdi> آزاد می‌کند.</li>
+  <li>یک <code>README.md</code> در پوشه‌ی بایگانی می‌گوید چه چیزی آنجاست، از کدام کامیت
+    آمده، و چطور بازیابی می‌شود.</li>
+  <li><strong>چرا انتقال و نه حذف:</strong> قاعده‌ی ۱۴ حذف لاگ آزمایش‌ها را ممنوع
+    می‌کند. داده‌ی Binance دوباره قابل دانلود است، ولی لاگ‌ها و نتایج نه.</li>
+</ul>
+
+<h3 id="s3-2">۳.۲ فایل <code>CLAUDE.md</code></h3>
+<p>
+  Claude Code این فایل را در شروع هر جلسه خودکار می‌خواند؛ پس قواعد همیشه در کارند.
+  متن brief عیناً ذخیره می‌شود، به‌علاوه‌ی دو افزوده که متن دقیقشان این است:
+</p>
+<blockquote dir="ltr">
+  <strong>Top note:</strong> Approved decisions recorded in <code>PROGRESS.md</code> refine this
+  brief's phases and defaults. They never relax the hard rules.
+</blockquote>
+<blockquote dir="ltr">
+  <strong>15. Provider eligibility</strong> (added 2026-10-03 with the user's approval). Never get
+  around a block or an exclusion that a provider applies to the user's country of residence, from
+  any machine. Never open an account, demo included, with a provider that does not accept residents
+  of that country. Read the terms of every data source or service before using it, and record the
+  verdict in <code>PROGRESS.md</code>. Committed files never contain personal or infrastructure
+  details: country of residence, server location, IP addresses, hostnames, or VPN setup.
+</blockquote>
+<ul>
+  <li><strong>یادداشت بالا:</strong> تصمیم‌هایی که شما تأیید کرده‌اید (مثل
+    <bdi>ECB</bdi> به‌جای <bdi>Dukascopy</bdi>) در <code>PROGRESS.md</code> ثبت می‌شوند
+    و جزئیات brief را دقیق‌تر می‌کنند، ولی هیچ‌وقت یک قاعده‌ی سخت را سست نمی‌کنند.</li>
+  <li><strong>قاعده‌ی ۱۵</strong> همان قواعد انطباقی است که تأیید کردید. نام هیچ کشوری در
+    آن نیست، چون این فایل به GitHub push می‌شود. جزئیات مربوط به کشور و شبکه فقط در
+    حافظه‌ی محلی Claude روی سرور ذخیره می‌شود (<a href="#s3-4">بخش ۳.۴</a>).</li>
+</ul>
+
+<h3>۳.۳ فایل <code>PROGRESS.md</code></h3>
+<p>
+  به انگلیسی، مثل بقیه‌ی مستندات فنی، با بخش‌هایی که brief خواسته به‌علاوه‌ی چند بخش
+  کمکی. پیش‌نمایش ساختارش:
+</p>
+<pre><code># PROGRESS
+
+Checkpoint mode: STEP
+Local time zone for reports: Asia/Tehran
+
+## Current position
+Phase 0 (Foundations). Step 0.1 (record decisions): done, awaiting approval.
+Next: Step 0.2 (repo skeleton and environment).
+Experiments to date: 0
+
+## Key constants
+- HOLDOUT_START: 2021-01-01   (development data: 1999-01-04 .. 2020-12-31)
+- Universe: EURUSD, GBPUSD, USDJPY, AUDUSD, USDCAD, USDCHF, NZDUSD
+- Account currency: USD
+- Starting equity: 100,000 USD (simulated); position step: 1,000 units
+
+## Environment
+- Server: Ubuntu 24.04.3 LTS, x86_64, 2 vCPU, 3.7 GiB RAM, no swap
+- Claude Code, the research and the Phase 3 demo bot all run on the server
+- Python 3.12 (CPython 3.12.11 via uv 0.8.12); all stored timestamps are UTC
+
+## Data and costs (initial assumptions)
+- Prices: ECB euro reference rates, mid, one fixing a day (~14:15 Europe/Berlin);
+  USD pairs triangulated through EUR
+- Interest rates for swaps: BIS central bank policy rates
+- Cost profile A (spread, slippage per pair), commission 0 (in the spread)
+- Swap: BIS rate differential minus a 1.0%/yr markup on each side;
+  the Wednesday rollover counts 3 nights
+- Stress tests, always reported: all costs x2 and x3
+
+## Compliance
+- Hard rule 15 in CLAUDE.md. Specifics are kept outside the repo.
+
+## Approvals log
+- 2026-10-03 — ...
+
+## Decisions log
+- 2026-10-03 — decision — reason — impact
+
+## Open questions
+1. ...</code></pre>
+<p>این موارد هم صادقانه در Decisions log نوشته می‌شوند:</p>
+<ul>
+  <li>جلسه‌ی قبلی، امروز، فایل کامل تاریخچه‌ی <bdi>ECB</bdi> را باز کرد، ولی فقط برای
+    شمردن روزها و شکاف‌ها و نه برای قیمت یا بازده.</li>
+  <li>هم شما و هم من کلیات بازار ارز در ۲۰۲۱ تا ۲۰۲۶ را می‌دانیم (مثلاً قوی بودن دلار در
+    ۲۰۲۲). پس holdout از نظر «دانش عمومی» کاملاً دیده‌نشده نیست. دفاع ما: پیش‌ثبت
+    پارامترهایی که از ادبیات علمی می‌آیند، یک شبکه‌ی پارامتر کوچک، و تست فوروارد فاز ۳
+    به‌عنوان آزمونی که واقعاً دیده‌نشده است.</li>
+  <li>شمارش آزمایش‌ها از صفر شروع می‌شود. ۲۴ آزمایش قبلی روی داده‌ی کریپتو بودند و
+    بایگانی می‌شوند.</li>
+</ul>
+
+<h3 id="s3-4">۳.۴ حافظه‌ی Claude (بیرون از مخزن)</h3>
+<p>
+  پوشه‌ای روی سرور
+  (<code>/root/.claude/projects/-root-hermes-AiTrading/memory/</code>) که من بین
+  جلسه‌ها از آن استفاده می‌کنم و وارد git نمی‌شود. در آن این‌ها را نگه می‌دارم: نیمرخ
+  کاری و ترجیحات شما، جزئیات قواعد انطباق، واقعیت‌های فنی سرور (مثلاً اینکه دانلودها
+  باید <bdi>IPv4</bdi> را ترجیح دهند)، و محل بایگانی پروژه‌ی قبلی.
+</p>
+
+<h3>۳.۵ commit</h3>
+<p>
+  فقط <code>CLAUDE.md</code> و <code>PROGRESS.md</code> commit می‌شوند، با پیام
+  <code>phase-0.1: record foundational decisions</code> و خط
+  <code>Co-Authored-By</code>. طبق brief، مرحله‌ی ۰.۱ گزارش HTML جداگانه ندارد؛ گزارش
+  فاز ۰ در مرحله‌ی ۰.۳ آن را هم پوشش می‌دهد. در این مرحله کد، تست یا آزمایشی وجود
+  ندارد. push بعد از این commit فقط اگر سیاست push را تأیید کنید
+  (<a href="#s9">بخش ۹</a>).
+</p>
+
+<h3>۳.۶ گزارش و توقف</h3>
+<p>
+  یک خلاصه‌ی فارسی کوتاه در ترمینال می‌دهم (هش کامیت، مسیر فایل‌ها، مسیر بایگانی،
+  سؤال‌های باز) و تا تأیید شما برای مرحله‌ی ۰.۲ متوقف می‌شوم.
+</p>
+
+<h3>۳.۷ آنچه در ۰.۱ انجام نمی‌شود</h3>
+<ul>
+  <li>هیچ کدی نوشته نمی‌شود و هیچ بسته‌ای نصب نمی‌شود.</li>
+  <li>هیچ داده‌ای دانلود نمی‌شود و با هیچ سرویس‌دهنده‌ی داده‌ای تماس گرفته نمی‌شود.</li>
+  <li>هیچ تنظیمی در سرور (شبکه، فایروال، سرویس‌ها) تغییر نمی‌کند.</li>
+  <li>تگ archive هرگز push نمی‌شود.</li>
+</ul>
+</section>
+
+<!-- ============================================================ -->
+<section id="s4">
+<h2>۴. یافته‌های بررسی اولیه</h2>
+<p class="note">
+  این بخش «نتایج» این سند است. هر عدد یا از دستوری آمده که امروز روی سرور اجرا شد
+  (نام دستور کنارش هست)، یا از گزارش‌های پروژه‌ی قبلی در کامیت <code>8168adc</code>.
+</p>
+
+<h3>۴.۱ وضعیت مخزن</h3>
+<p>اندازه‌گیری‌شده در <bdi>2026-10-03</bdi> حدود ساعت <bdi>10:20 UTC</bdi> با <code>git</code> و <code>du</code>.</p>
+<ul>
+  <li>فقط <code>.gitignore</code> در git ثبت است (کامیت <code>123c4fe</code>، «init commit»)،
+    و شاخه‌ی محلی <bdi>main</bdi> با <bdi>origin/main</bdi> یکی است.</li>
+  <li>باقی‌مانده‌های پروژه‌ی قبلی که همه gitignore شده‌اند:</li>
+</ul>
+<div class="table-wrap">
+<table>
+  <thead><tr><th>مسیر</th><th class="num">اندازه</th><th>محتوا</th></tr></thead>
+  <tbody>
+    <tr><td><code>data/</code></td><td class="num">1.4G</td><td>داده‌ی Binance (۴٬۳۱۷ فایل parquet)، لاگ‌ها، نتایج <bdi>E0001–E0012</bdi></td></tr>
+    <tr><td><code>.venv/</code></td><td class="num">392M</td><td>محیط پایتون قدیمی با بسته‌ی <bdi>aitrading</bdi></td></tr>
+    <tr><td><code>tests/</code></td><td class="num">1.6M</td><td>فقط فایل‌های <code>.pyc</code></td></tr>
+    <tr><td><code>src/</code></td><td class="num">912K</td><td>فقط فایل‌های <code>.pyc</code>؛ کد منبع با reset حذف شده</td></tr>
+    <tr><td><code>.hypothesis/</code></td><td class="num">604K</td><td>کش ابزار تست</td></tr>
+  </tbody>
+</table>
+</div>
+<ul>
+  <li><strong>تاریخچه:</strong> <bdi>reflog</bdi> نشان می‌دهد شاخه از ۷۲ کامیت به
+    «init commit» برگردانده شده. آخرین کامیت قدیمی <code>8168adc</code> است
+    (<bdi>2026-10-03 09:01 UTC</bdi>). git به‌طور پیش‌فرض ورودی‌های بی‌مرجع
+    <bdi>reflog</bdi> را بعد از حدود ۳۰ روز، در اولین <code>git gc</code>، پاک می‌کند.
+    پس بدون تگ یا bundle این تاریخچه از دست می‌رود.</li>
+</ul>
+
+<h3>۴.۲ پروژه‌ی قبلی در یک نگاه</h3>
+<p class="note">منبع: <code>CLAUDE.md</code> در کامیت <code>8168adc</code>.</p>
+<ul>
+  <li>پژوهش کریپتو روی آرشیو عمومی Binance در مراحل M0 تا M5: داده، موتور بک‌تست،
+    جعبه‌ابزار اعتبارسنجی، استراتژی‌های قاعده‌مند و یادگیری ماشین.</li>
+  <li>حکم: همه‌ی آزمایش‌های کاندید رد شدند و «مزیتی بعد از هزینه پیدا نشد» (۲۴ آزمایش
+    از سقف ۱۰۰؛ holdout دست‌نخورده ماند).</li>
+  <li>بعد، مسیر فارکس شروع شد و قدم اولش بررسی منابع داده و شرایط استفاده‌شان بود.
+    یافته‌های آن قدم پایه‌ی بخش ۴.۳ است.</li>
+  <li>کدهای آزموده‌ای مثل محاسبه‌ی <bdi>deflated Sharpe</bdi> و <bdi>bootstrap</bdi>، و
+    لایه‌ی دانلودی که <bdi>IPv4</bdi> را ترجیح می‌دهد، در آن تاریخچه هست. می‌شود در
+    مراحل مربوط دوباره به کارشان برد.</li>
+</ul>
+
+<h3>۴.۳ منابع داده و شرایط استفاده‌شان</h3>
+<div class="table-wrap">
+<table>
+  <thead><tr><th>منبع</th><th>برای</th><th>حکم</th><th>مبنا</th></tr></thead>
+  <tbody>
+    <tr><td><bdi>Dukascopy</bdi></td><td>OHLC و bid/ask ساعتی</td><td><span class="badge bad">✕ رد</span></td><td>شرایط استفاده؛ امروز دوباره از سایت خوانده شد (نقل‌قول‌ها پایین)</td></tr>
+    <tr><td><bdi>FRED</bdi></td><td>نرخ ارز و بهره</td><td><span class="badge bad">✕ رد</span></td><td>بررسی پروژه‌ی قبلی: کاربر API باید اعلام کند ساکن «کشور محدودشده» نیست، و ذخیره‌ی داده ممنوع است</td></tr>
+    <tr><td><bdi>ECB</bdi></td><td>نرخ ارز روزانه</td><td><span class="badge ok">✓ مجاز</span></td><td>«استفاده‌ی آزاد با ذکر منبع»؛ API بدون کلید؛ از سرور در دسترس</td></tr>
+    <tr><td><bdi>BIS</bdi></td><td>نرخ بهره‌ی بانک‌های مرکزی</td><td><span class="badge ok">✓ مجاز</span></td><td>«استفاده بدون محدودیت، به شرط ذکر منبع»؛ API بدون کلید؛ از سرور در دسترس</td></tr>
+    <tr><td>تاریخچه‌ی بروکر</td><td>OHLC</td><td><span class="badge warn">به تعویق</span></td><td>به حساب و انتخاب بروکر نیاز دارد</td></tr>
+  </tbody>
+</table>
+</div>
+<p>نقل‌قول‌های شرایط استفاده‌ی Dukascopy (عین متن، امروز خوانده شد):</p>
+<blockquote dir="ltr">“You shall not use or attempt to use any "scraper," "robot," "bot," "spider,"
+  "data mining," "computer code," or any other automate device, program, tool, algorithm, process or
+  methodology to access, acquire, copy, or monitor any portion of the WEBSITE…”</blockquote>
+<blockquote dir="ltr">“The WEBSITE and the information contained therein may not be used to construct
+  a database of any kind.”</blockquote>
+<blockquote dir="ltr">“…you may download material from the WEBSITE and/or make one print copy for your
+  own personal, non-commercial use…”</blockquote>
+<p>
+  یعنی: استفاده از هر ابزار خودکار برای دریافت داده ممنوع است و ساختن پایگاه داده از
+  اطلاعات سایت هم ممنوع است؛ فقط دانلود دستی برای استفاده‌ی شخصی و غیرتجاری مجاز است.
+  پروژه‌ی ما دقیقاً یک دانلودکننده‌ی خودکار و یک پایگاه داده‌ی نسخه‌دار است. ابزار
+  <bdi>dukascopy-node</bdi> هم یک ابزار خودکار است.
+</p>
+<p>
+  شرایط <bdi>ECB</bdi> و <bdi>BIS</bdi> (به نقل از گزارش پروژه‌ی قبلی؛ در ۱.۱ دوباره
+  خوانده می‌شوند):
+</p>
+<blockquote dir="ltr">ECB: “users of this website may make free use of the information obtained
+  directly from it”, provided it is reproduced accurately and the ECB is cited as the source.</blockquote>
+<blockquote dir="ltr">BIS: “The use of BIS statistics is unrestricted, provided that if the statistics
+  are reproduced, the BIS must be cited as the source.”</blockquote>
+
+<h3>۴.۴ واقعیت‌های ECB و BIS که روی طراحی اثر دارند</h3>
+<p class="note">منبع: <code>reports/TM1-sources.md</code> در کامیت <code>8168adc</code>.</p>
+<ul>
+  <li><strong>ECB:</strong> روزی یک نرخ برای هر ارز در برابر یورو، از یک هماهنگی میان
+    بانک‌های مرکزی حدود ساعت <bdi>14:10</bdi> به وقت اروپای مرکزی (عنوان سری:
+    <bdi>“2.15 pm (C.E.T.)”</bdi>). انتشار حدود ساعت <bdi>16:00</bdi>؛ برای
+    <bdi>2026-10-02</bdi> در <bdi>13:56 UTC</bdi> اندازه‌گیری شد.</li>
+  <li>فایل کامل از <bdi>1999-01-04</bdi> تا <bdi>2026-10-02</bdi> شامل <bdi>7,106</bdi>
+    روز fixing است. هر ۷ ارز مورد نیاز ما در کل دوره بدون شکاف هستند. فاصله‌ی دو fixing
+    پشت‌سرهم حداکثر ۵ روز تقویمی است (عید پاک).</li>
+  <li>جفت‌های دلاری با تقسیم ساخته می‌شوند؛ مثلاً
+    <bdi>USDJPY = (JPY per EUR) / (USD per EUR)</bdi>.</li>
+  <li><strong>BIS:</strong> نرخ سیاستی اصلی هر بانک مرکزی برای هر روز. داده‌ی روزانه
+    هفته‌ای یک بار منتشر می‌شود، پس یک هفته یا بیشتر تأخیر دارد.</li>
+  <li>نرخ ژاپن در سه دوره خالی است: <bdi>1999-02-11 → 2000-08-11</bdi>،
+    <bdi>2001-03-18 → 2006-03-09</bdi>، و <bdi>2013-04-03 → 2016-09-21</bdi>. این‌ها
+    دوره‌های نرخ صفر و تسهیل کمّی بانک ژاپن هستند و پیش از محاسبه‌ی سوآپ ین قاعده
+    می‌خواهند.</li>
+</ul>
+
+<h3>۴.۵ سرور</h3>
+<div class="table-wrap">
+<table>
+  <thead><tr><th>مورد</th><th>مقدار</th><th>منبع</th></tr></thead>
+  <tbody>
+    <tr><td>سیستم‌عامل</td><td><bdi>Ubuntu 24.04.3 LTS, x86_64</bdi></td><td><code>/etc/os-release</code></td></tr>
+    <tr><td>پردازنده و حافظه</td><td>۲ vCPU، <bdi>3.7 GiB</bdi> RAM (حدود <bdi>1.3 GiB</bdi> آزاد هنگام اندازه‌گیری)، بدون swap</td><td><code>nproc</code>، <code>free -h</code></td></tr>
+    <tr><td>دیسک</td><td><bdi>38G</bdi> که <bdi>5.9G</bdi> آن آزاد است (<bdi>84%</bdi> پر)</td><td><code>df -h</code></td></tr>
+    <tr><td>ساعت سیستم</td><td>UTC</td><td><code>/etc/timezone</code></td></tr>
+    <tr><td>ابزارها</td><td><bdi>uv 0.8.12</bdi>؛ <bdi>Python 3.12.3</bdi> (سیستم) و <bdi>3.12.11</bdi> (از طریق uv)؛ <bdi>git 2.43</bdi>؛ <bdi>Node 24</bdi></td><td><code>--version</code></td></tr>
+    <tr><td>شبکه</td><td><bdi>IPv6</bdi> اعلام شده ولی خروجی ندارد، پس دانلودهای پایتون باید <bdi>IPv4</bdi> را ترجیح دهند (در ۱.۱ دوباره بررسی می‌شود)</td><td>گزارش پروژه‌ی قبلی</td></tr>
+  </tbody>
+</table>
+</div>
+<p>
+  <strong>محل اجرای Claude Code:</strong> همین سرور. تحقیق و ربات دموی فاز ۳ هم همین‌جا
+  اجرا می‌شوند و لپ‌تاپ فقط برای خواندن گزارش‌هاست.
+</p>
+</section>
+
+<!-- ============================================================ -->
+<section id="s5">
+<h2>۵. تصمیم‌ها و فرض‌ها</h2>
+
+<h3>۵.۱ جدول خلاصه</h3>
+<div class="table-wrap">
+<table>
+  <thead><tr><th>موضوع</th><th>تصمیم</th><th>منبع</th></tr></thead>
+  <tbody>
+    <tr><td>پروژه‌ی قبلی</td><td>بایگانی کامل</td><td>پاسخ شما</td></tr>
+    <tr><td>قواعد انطباق</td><td>ادامه، به‌صورت قاعده‌ی ۱۵</td><td>پاسخ شما</td></tr>
+    <tr><td>منبع قیمت</td><td>نرخ‌های مرجع ECB، از <bdi>1999-01-04</bdi></td><td>پاسخ شما</td></tr>
+    <tr><td>نرخ بهره برای سوآپ</td><td>نرخ سیاستی بانک‌های مرکزی از BIS</td><td>پیرو انتخاب ECB</td></tr>
+    <tr><td><bdi>HOLDOUT_START</bdi></td><td><bdi>2021-01-01</bdi></td><td>پاسخ شما</td></tr>
+    <tr><td>سرمایه و ارز حساب</td><td><bdi>USD 100,000</bdi>؛ گام حجم <bdi>1,000</bdi> واحد</td><td>پاسخ شما</td></tr>
+    <tr><td>هزینه‌ها</td><td>پروفایل A (<a href="#s5-3">بخش ۵.۳</a>)</td><td>پاسخ شما</td></tr>
+    <tr><td>کانال هشدار</td><td>ربات تلگرام (ساخت در فاز ۳)</td><td>پاسخ شما</td></tr>
+    <tr><td>منطقه‌ی زمانی گزارش‌ها</td><td><bdi>Asia/Tehran</bdi> در کنار UTC</td><td>پاسخ شما</td></tr>
+    <tr><td>محیط پایتون</td><td><bdi>uv</bdi> و <bdi>Python 3.12</bdi> (تأیید نهایی در ۰.۲)</td><td>اندازه‌گیری و پروژه‌ی قبلی</td></tr>
+    <tr><td>محل اجرا</td><td>همین سرور</td><td>اندازه‌گیری</td></tr>
+    <tr><td>حالت توقف</td><td><bdi>STEP</bdi></td><td>پیش‌فرض brief</td></tr>
+  </tbody>
+</table>
+</div>
+
+<h3>۵.۲ هر تصمیم: چرا، گزینه‌های دیگر، و اثرش اگر اشتباه باشد</h3>
+
+<h4>منبع قیمت: نرخ‌های مرجع ECB</h4>
+<ul>
+  <li><strong>چرا:</strong> شرایط استفاده‌اش آزاد است؛ ۲۷ سال تاریخچه دارد؛ یک منبع برای
+    هر ۷ جفت است؛ حساب و کلید نمی‌خواهد؛ و از سرور در دسترس است.</li>
+  <li><strong>گزینه‌های دیگر:</strong> <bdi>Dukascopy</bdi> (شرایطش همین کار را ممنوع
+    می‌کند)؛ تاریخچه‌ی بروکر (انتخاب بروکر و حساب را از فاز ۳ به فاز ۱ می‌آورد و عمق و
+    شرایط داده‌اش نامعلوم است).</li>
+  <li><strong>اگر اشتباه باشد:</strong> داده فقط قیمت بسته‌شدن روزانه است و اسپرد مدل
+    می‌شود، نه مشاهده. اگر ECB یا BIS دسترسی از کشور شما را بسته باشند، باید منبع دیگری
+    پیدا کنیم؛ این پیش از ۱.۱ بررسی می‌شود (<a href="#s8">بخش ۸</a>).</li>
+</ul>
+
+<h4><bdi>HOLDOUT_START = 2021-01-01</bdi></h4>
+<ul>
+  <li><strong>چرا:</strong> حدود ۲۲ سال داده‌ی توسعه و حدود ۵.۸ سال holdout. holdout
+    آن‌قدر بلند است که بیش‌برازش جدی را نشان دهد، و جدیدترین دوره را آزمون می‌کند.</li>
+  <li><strong>گزینه‌های دیگر:</strong> <bdi>2023-01-01</bdi> (holdout کوتاه‌تر و
+    پرنویزتر)؛ <bdi>2019-01-01</bdi> (داده‌ی توسعه‌ی کمتر).</li>
+  <li><strong>اگر اشتباه باشد:</strong> holdout نمی‌تواند یک مزیت کوچک را از شانس جدا
+    کند (<a href="#s6">بخش ۶</a>). آزمون واقعاً تازه، تست فوروارد فاز ۳ است.</li>
+</ul>
+
+<h4>سرمایه: <bdi>USD 100,000</bdi></h4>
+<ul>
+  <li><strong>چرا:</strong> هر ۷ جفت دلار دارند و تبدیل سود و زیان ساده است. در این
+    اندازه، گرد کردن حجم به میکرولات تقریباً بی‌اثر است.</li>
+  <li><strong>گزینه‌ی دیگر:</strong> <bdi>USD 10,000</bdi>؛ برای یک معامله‌گر خرد
+    واقعی‌تر است، ولی خطای گرد کردن پوزیشن‌های کوچک محسوس می‌شود.</li>
+  <li><strong>اگر اشتباه باشد:</strong> نتیجه برای حساب کوچک‌تر کمی فرق می‌کند. بعداً
+    می‌شود یک اجرای تشخیصی با <bdi>10,000</bdi> هم گرفت.</li>
+</ul>
+
+<h4>هزینه‌ها: پروفایل A</h4>
+<ul>
+  <li><strong>چرا:</strong> محافظه‌کار و ساده است: مدل حساب استاندارد، که کمیسیون داخل
+    اسپرد است.</li>
+  <li><strong>گزینه‌ی دیگر:</strong> حساب ECN (اسپرد خام به‌علاوه‌ی کمیسیون)؛ هزینه‌ی کل
+    تقریباً مشابه است.</li>
+  <li><strong>اگر اشتباه باشد:</strong> اگر هزینه‌ی واقعی بیشتر باشد، نتایج خوش‌بینانه
+    می‌شوند. تست فشار ×۲ و ×۳ همیشه گزارش می‌شود، و در ۱.۳ اعداد با شواهد منتشرشده
+    جایگزین می‌شوند.</li>
+</ul>
+
+<h4>قواعد انطباق: قاعده‌ی ۱۵</h4>
+<ul>
+  <li><strong>چرا:</strong> قاعده‌ی خود شما در پروژه‌ی قبلی است و جلوی ریسک حقوقی و نقض
+    شرایط استفاده را می‌گیرد.</li>
+  <li><strong>گزینه‌ی دیگر:</strong> تصمیم‌گیری موردی برای هر سرویس.</li>
+  <li><strong>اثر:</strong> انتخاب‌ها محدودتر می‌شوند، به‌خصوص انتخاب بروکر در فاز ۳.</li>
+</ul>
+
+<h4>بایگانی پروژه‌ی قبلی</h4>
+<ul>
+  <li><strong>چرا:</strong> پروژه‌ی جدید از یک پوشه‌ی تمیز شروع می‌شود، بی‌آنکه چیزی
+    غیرقابل‌بازسازی پاک شود.</li>
+  <li><strong>گزینه‌های دیگر:</strong> پاک کردن داده و لاگ‌ها؛ یا دست نزدن.</li>
+  <li><strong>اثر:</strong> هیچ؛ همه‌چیز قابل بازیابی است.</li>
+</ul>
+
+<h4>هشدار: ربات تلگرام</h4>
+<ul>
+  <li><strong>چرا:</strong> از سرور در دسترس است (پروژه‌ی قبلی اندازه گرفت)، ساده است، و
+    فقط یک راز (توکن ربات) در <code>.env</code> می‌خواهد.</li>
+  <li><strong>گزینه‌های دیگر:</strong> ایمیل؛ یا تعویق تا فاز ۳.</li>
+  <li><strong>اثر:</strong> تا فاز ۳ هیچ.</li>
+</ul>
+
+<h3 id="s5-3">۵.۳ پروفایل هزینه‌ی A</h3>
+<div class="table-wrap">
+<table>
+  <thead>
+    <tr><th>جفت</th><th class="num">اسپرد (پیپ)</th><th class="num">slippage هر طرف (پیپ)</th><th class="num">رفت‌وبرگشت (پیپ)</th></tr>
+  </thead>
+  <tbody>
+    <tr><td><bdi>EURUSD</bdi></td><td class="num">1.0</td><td class="num">0.2</td><td class="num">1.4</td></tr>
+    <tr><td><bdi>USDJPY</bdi></td><td class="num">1.0</td><td class="num">0.2</td><td class="num">1.4</td></tr>
+    <tr><td><bdi>GBPUSD</bdi></td><td class="num">1.5</td><td class="num">0.3</td><td class="num">2.1</td></tr>
+    <tr><td><bdi>AUDUSD</bdi></td><td class="num">1.2</td><td class="num">0.2</td><td class="num">1.6</td></tr>
+    <tr><td><bdi>USDCAD</bdi></td><td class="num">1.5</td><td class="num">0.3</td><td class="num">2.1</td></tr>
+    <tr><td><bdi>USDCHF</bdi></td><td class="num">1.5</td><td class="num">0.3</td><td class="num">2.1</td></tr>
+    <tr><td><bdi>NZDUSD</bdi></td><td class="num">1.8</td><td class="num">0.3</td><td class="num">2.4</td></tr>
+  </tbody>
+</table>
+</div>
+<ul>
+  <li><strong>رفت‌وبرگشت</strong> = اسپرد کامل + دو بار slippage؛ چون در ورود و خروج هر
+    بار نصف اسپرد و یک slippage پرداخت می‌شود.</li>
+  <li><strong>کمیسیون:</strong> صفر (داخل اسپرد).</li>
+  <li><strong>قیمت پر شدن:</strong> fixing روز کاری بعد؛ نرخ میانی به‌علاوه یا منهای نصف
+    اسپرد، به‌علاوه‌ی slippage در جهت نامطلوب.</li>
+  <li><strong>سوآپ:</strong> اختلاف نرخ سیاستی BIS دو ارز، منهای کارمزد بروکر
+    <bdi>1%</bdi> سالانه در هر طرف. رول‌اوور چهارشنبه سه شب حساب می‌شود.</li>
+  <li><strong>تست فشار:</strong> همه‌ی هزینه‌ها ×۲ و ×۳، همیشه در گزارش.</li>
+  <li><strong>وضعیت:</strong> حدس اولیه؛ در ۱.۳ با شواهد منتشرشده جایگزین می‌شود.</li>
+</ul>
+<p>
+  <strong>مثال اسپرد:</strong> یک معامله‌ی رفت‌وبرگشت <bdi>100,000</bdi> واحدی در
+  <bdi>EURUSD</bdi> هزینه‌ای برابر <bdi>1.4</bdi> پیپ × <bdi>$10</bdi> برای هر پیپ =
+  <bdi>$14</bdi> دارد.
+</p>
+<p>
+  <strong>مثال سوآپ (اعداد فرضی):</strong> فرض کنید نرخ بهره‌ی ارز اول
+  <bdi>3%</bdi> بالاتر از ارز دوم است و ارزش پوزیشن <bdi>$100,000</bdi>. در پوزیشن
+  خرید: <bdi>3% − 1% = +2%</bdi> در سال، یعنی حدود <bdi>+$5.48</bdi> در هر شب. در
+  پوزیشن فروش: <bdi>−3% − 1% = −4%</bdi> در سال، یعنی حدود <bdi>−$10.96</bdi> در هر
+  شب. در شب چهارشنبه این مقدارها سه برابر می‌شوند.
+</p>
+<p class="note">
+  نظر من: استراتژی روندی پوزیشن‌ها را هفته‌ها و ماه‌ها نگه می‌دارد، پس سوآپ احتمالاً
+  از اسپرد مهم‌تر است.
+</p>
+
+<h3>۵.۴ پیامدهای انتخاب ECB برای brief</h3>
+<div class="table-wrap">
+<table>
+  <thead><tr><th>موضوع</th><th>brief می‌گوید</th><th>با ECB</th><th>کجا</th></tr></thead>
+  <tbody>
+    <tr><td>داده</td><td><bdi>OHLC</bdi> روزانه؛ ثبت طرف قیمت (bid/ask/mid)</td><td>روزی یک نرخ میانی (fixing)؛ بدون OHLC</td><td>۱.۱</td></tr>
+    <tr><td>پر شدن</td><td>قیمت باز شدن بار بعد</td><td>fixing روز کاری بعد؛ تصمیم فقط بعد از انتشار fixing (حدود <bdi>16:00</bdi> فرانکفورت)</td><td>قاعده‌ی ۳ و ۱.۳</td></tr>
+    <tr><td>اسپرد نزدیک رول‌اوور</td><td>اسپرد بازتر نزدیک <bdi>17:00</bdi> نیویورک</td><td>fill بک‌تست ساعت <bdi>14:15</bdi> فرانکفورت است و به آن پنجره نمی‌خورد؛ پارامتر در مدل می‌ماند</td><td>۱.۳</td></tr>
+    <tr><td>کنترل کیفیت</td><td>شکاف، تکراری، جهش، بار آخر هفته یا ناقص</td><td>شکاف در برابر تقویم TARGET، تکراری، جهش، دقت گرد کردن، سازگاری مثلثی، مقایسه با منبع مستقل (نامزد: <bdi>H.10</bdi> فدرال رزرو، پس از خواندن شرایطش)</td><td>۱.۲</td></tr>
+    <tr><td>زمان‌بندی زنده</td><td>گره‌خورده به <bdi>17:00</bdi> نیویورک</td><td>گره‌خورده به fixing: روز <bdi>D+1</bdi> حدود <bdi>14:15</bdi> به وقت <bdi>Europe/Berlin</bdi>، مقاوم به ساعت تابستانی</td><td>۳.۳</td></tr>
+    <tr><td>ذکر منبع</td><td>—</td><td>هر گزارش می‌نویسد <bdi>“Source: ECB”</bdi> و <bdi>“Source: BIS”</bdi> (شرط استفاده‌ی آزاد)</td><td>همه‌جا</td></tr>
+  </tbody>
+</table>
+</div>
+<p class="note">هر کدام از این تغییرها در مرحله‌ی خودش و با تأیید شما اعمال می‌شود؛ الان فقط ثبت می‌شوند.</p>
+
+<h3>۵.۵ تقسیم زمانی داده</h3>
+<figure>
+  <svg viewBox="0 0 640 88" role="img" aria-labelledby="tl-title tl-desc">
+    <title id="tl-title">Development and holdout periods</title>
+    <desc id="tl-desc">Development data runs from 1999-01-04 to 2020-12-31. The holdout runs from 2021-01-01 to 2026-10-03 and stays locked until step 2.5.</desc>
+    <text class="lbl" x="16" y="28" text-anchor="start">Development · 1999-01-04 → 2020-12-31</text>
+    <text class="lbl" x="618.6" y="28" text-anchor="end">Holdout · 2021-01-01 → 2026-10-03</text>
+    <rect class="s1" x="16" y="36" width="476.7" height="22">
+      <title>Development: 1999-01-04 to 2020-12-31 (about 22 years)</title>
+    </rect>
+    <path class="s2" d="M494.7,36 H614.6 Q618.6,36 618.6,40 V54 Q618.6,58 614.6,58 H494.7 Z">
+      <title>Holdout: 2021-01-01 to 2026-10-03 (about 5.8 years), locked until step 2.5</title>
+    </path>
+    <line class="axis" x1="16" y1="62" x2="624" y2="62"/>
+    <line class="axis" x1="37.7" y1="62" x2="37.7" y2="66"/>
+    <line class="axis" x1="146.3" y1="62" x2="146.3" y2="66"/>
+    <line class="axis" x1="254.9" y1="62" x2="254.9" y2="66"/>
+    <line class="axis" x1="363.4" y1="62" x2="363.4" y2="66"/>
+    <line class="axis" x1="472" y1="62" x2="472" y2="66"/>
+    <line class="axis" x1="580.6" y1="62" x2="580.6" y2="66"/>
+    <text class="tick" x="37.7" y="80" text-anchor="middle">2000</text>
+    <text class="tick" x="146.3" y="80" text-anchor="middle">2005</text>
+    <text class="tick" x="254.9" y="80" text-anchor="middle">2010</text>
+    <text class="tick" x="363.4" y="80" text-anchor="middle">2015</text>
+    <text class="tick" x="472" y="80" text-anchor="middle">2020</text>
+    <text class="tick" x="580.6" y="80" text-anchor="middle">2025</text>
+  </svg>
+  <ul class="legend">
+    <li><span class="sw s1"></span>دوره‌ی توسعه: همه‌ی پژوهش فاز ۱ و ۲</li>
+    <li><span class="sw s2"></span>holdout: قفل تا مرحله‌ی ۲.۵</li>
+  </ul>
+  <figcaption>
+    آنچه باید دید: نوار آبی دوره‌ی توسعه است و همه‌ی پژوهش روی آن انجام می‌شود. نوار
+    نارنجی holdout است که تا اجرای یک‌باره در مرحله‌ی ۲.۵ دانلود و بارگذاری نمی‌شود.
+    داده‌ی تست فوروارد فاز ۳ هنوز وجود ندارد و در آینده به دست می‌آید. این نمودار از
+    تاریخ‌های تصمیم ساخته شده، نه از داده.
+  </figcaption>
+</figure>
+<div class="table-wrap">
+<table>
+  <thead><tr><th>دوره</th><th>از</th><th>تا</th><th>طول تقریبی</th></tr></thead>
+  <tbody>
+    <tr><td>توسعه</td><td><bdi>1999-01-04</bdi></td><td><bdi>2020-12-31</bdi></td><td>حدود ۲۲ سال</td></tr>
+    <tr><td>holdout</td><td><bdi>2021-01-01</bdi></td><td>امروز (<bdi>2026-10-03</bdi>)</td><td>حدود ۵.۸ سال</td></tr>
+    <tr><td>فوروارد (فاز ۳)</td><td>بعد از اجرای holdout</td><td>۳ تا ۶ ماه بعد</td><td>—</td></tr>
+  </tbody>
+</table>
+</div>
+<p class="note">
+  ۱۲ ماه اول داده‌ی توسعه صرف «گرم شدن» محاسبه‌ی بازده ۱۲ماهه می‌شود؛ پس زودترین سیگنال
+  ممکن حدود اوایل سال ۲۰۰۰ است.
+</p>
+
+<h3>۵.۶ چه چیزی در مخزن می‌آید و چه چیزی محلی می‌ماند</h3>
+<ul>
+  <li><strong>commit و push می‌شود:</strong> <code>CLAUDE.md</code>،
+    <code>PROGRESS.md</code>، گزارش‌ها، کد و تنظیمات؛ همه بدون جزئیات شخصی یا زیرساختی.</li>
+  <li><strong>محلی می‌ماند:</strong> حافظه‌ی Claude (جزئیات کشور و شبکه)، پوشه‌ی بایگانی،
+    <code>.env</code>، و داده‌ها.</li>
+  <li>منطقه‌ی زمانی <bdi>Asia/Tehran</bdi> در فایل‌ها می‌آید، چون brief آن را برای پانویس
+    گزارش‌ها لازم دارد. همین اطلاعات در متادیتای کامیت‌ها (<bdi>+0330</bdi>) هم پیداست.</li>
+</ul>
+</section>
+
+<!-- ============================================================ -->
+<section id="s6">
+<h2>۶. محدودیت‌ها و ریسک‌ها</h2>
+<ol>
+  <li><strong>fixing قیمت قابل معامله نیست.</strong> نرخ مرجع ECB عکسی از نرخ میانی است و
+    خود ECB می‌گوید «فقط برای اطلاع» منتشر می‌شود. معامله‌ی واقعی در همان ساعت کمی متفاوت
+    پر می‌شود. اسپرد را مدل می‌کنیم و فاصله‌ی واقعی را در فاز ۳ اندازه می‌گیریم.</li>
+  <li><strong>فقط قیمت بسته‌شدن داریم.</strong> سقف و کف روز را نداریم؛ پس استراتژی‌هایی
+    که به حد ضرر درون‌روزی نیاز دارند آزمون‌پذیر نیستند. مومنتوم سری زمانی به آن‌ها نیاز
+    ندارد. یک سقوط ناگهانی بین دو fixing در بک‌تست دیده نمی‌شود.</li>
+  <li><strong>ساختن مثلثی نویز گرد کردن دارد.</strong> هر جفت دلاری از دو نرخ گردشده
+    ساخته می‌شود. این نویز کوچک است و در ۱.۲ اندازه‌گیری می‌شود.</li>
+  <li><strong>هزینه‌ها تا ۱.۳ حدس‌اند.</strong> اسپردها پیش از حدود ۲۰۰۸ بازتر بودند،
+    پس اسپرد ثابتِ امروزی ممکن است هزینه‌ی سال‌های اول را کمتر از واقع نشان دهد. تا
+    شواهد جمع شود، تست فشار ×۲ و ×۳ این خطر را پوشش می‌دهد.</li>
+  <li><strong>مدل سوآپ تقریبی است.</strong> نرخ سیاستی با نرخ واقعی شبانه‌ی بازار یکی
+    نیست؛ کارمزد بروکر نامعلوم است؛ نرخ ژاپن سه شکاف دارد؛ و BIS هفتگی منتشر می‌کند.</li>
+  <li><strong>holdout از نظر دانش عمومی کاملاً دیده‌نشده نیست.</strong> هم شما و هم من
+    کلیات ۲۰۲۱ تا ۲۰۲۶ را می‌دانیم، و جلسه‌ی قبلی فایل ECB را برای شمردن روزها باز
+    کرد. دفاع: پیش‌ثبت، پارامترهای برگرفته از ادبیات، شبکه‌ی کوچک، و تست فوروارد.</li>
+  <li><strong>قدرت آماری محدود است.</strong> با فرمول تقریبی استاندارد
+    <bdi>SE(Sharpe) ≈ √((1 + SR²/2) / T)</bdi> (Lo, 2002)، اگر شارپ واقعی
+    <bdi>0.5</bdi> باشد، در <bdi>T = 5.75</bdi> سال انحراف معیار برآورد حدود
+    <bdi>0.44</bdi> است؛ یعنی چنین شارپی فقط حدود یک انحراف معیار با صفر فاصله دارد. پس
+    holdout می‌تواند بیش‌برازش شدید را لو بدهد، ولی نمی‌تواند یک مزیت متوسط را ثابت کند.</li>
+  <li><strong>انتظار واقع‌بینانه (نظر):</strong> روندگیری در فارکس دوره‌های ضعیف مستندی
+    داشته، از جمله دهه‌ی ۲۰۱۰. نتیجه‌ی «مزیتی بعد از هزینه پیدا نشد» کاملاً ممکن است.
+    جلسه‌ی قبلی برای یک برنامه‌ی مشابه فارکس احتمال آن را حدود ۶۰ تا ۷۰ درصد تخمین
+    زده بود. این یک نظر است، نه نتیجه‌ی محاسبه.</li>
+  <li><strong>بروکر فاز ۳.</strong> ممکن است بروکری که صریحاً ساکنان کشور شما را
+    بپذیرد و API مناسب داشته باشد پیدا نشود. آن موقع گزینه‌ها را با هم بررسی می‌کنیم؛
+    مثلاً یک بروکر کاغذی خودساخته روی داده‌ی زنده.</li>
+  <li><strong>منابع سرور.</strong> <bdi>3.7 GiB</bdi> حافظه بدون swap و دیسک
+    <bdi>84%</bdi> پر. برای داده‌ی روزانه کافی است، ولی کارهای سنگین یکی‌یکی اجرا
+    می‌شوند.</li>
+  <li><strong>وابستگی به API.</strong> اگر قالب یا دسترسی API تغییر کند، نسخه‌ی خام و
+    دست‌نخورده‌ی داده‌ها پیش ما می‌ماند.</li>
+</ol>
+</section>
+
+<!-- ============================================================ -->
+<section id="s7">
+<h2>۷. مفاهیم جدید</h2>
+<p class="note">برای هر مفهوم: اول شهود، بعد یک مثال. اعداد مثال‌ها فرضی‌اند، نه نتیجه.</p>
+<dl class="glossary">
+  <dt>جفت‌ارز (<bdi>currency pair</bdi>)</dt>
+  <dd>قیمت یک ارز بر حسب ارز دیگر. در <bdi>EURUSD = 1.1000</bdi> هر یورو <bdi>1.10</bdi>
+    دلار است. ارز اول «پایه» و دومی «مظنه» است. خرید <bdi>EURUSD</bdi> یعنی خرید یورو و
+    فروش دلار.</dd>
+
+  <dt>پیپ (<bdi>pip</bdi>)</dt>
+  <dd>واحد کوچک حرکت قیمت: در بیشتر جفت‌ها <bdi>0.0001</bdi> و در جفت‌های ین
+    <bdi>0.01</bdi>. اگر <bdi>EURUSD</bdi> از <bdi>1.1000</bdi> به <bdi>1.1010</bdi>
+    برود، ۱۰ پیپ حرکت کرده. برای <bdi>100,000</bdi> واحد <bdi>EURUSD</bdi> هر پیپ
+    <bdi>$10</bdi> است؛ در <bdi>USDJPY</bdi> هر پیپ <bdi>1,000</bdi> ین است (در نرخ
+    <bdi>150</bdi> حدود <bdi>$6.67</bdi>).</dd>
+
+  <dt>لات و میکرولات (<bdi>lot</bdi>)</dt>
+  <dd>واحد حجم معامله. یک لات استاندارد <bdi>100,000</bdi> واحد ارز پایه است و یک
+    میکرولات <bdi>1,000</bdi> واحد. در این پروژه حجم هر پوزیشن مضربی از
+    <bdi>1,000</bdi> است.</dd>
+
+  <dt>قیمت خرید و فروش، اسپرد (<bdi>bid / ask / spread</bdi>)</dt>
+  <dd>بروکر به قیمت <bdi>ask</bdi> به شما می‌فروشد و به قیمت <bdi>bid</bdi> از شما
+    می‌خرد. فاصله‌ی این دو اسپرد است و <bdi>mid</bdi> وسط آن‌هاست. اگر bid
+    <bdi>1.1000</bdi> و ask <bdi>1.1001</bdi> باشد، اسپرد ۱ پیپ است و خرید و فروش فوری
+    <bdi>$10</bdi> برای هر <bdi>100,000</bdi> واحد هزینه دارد.</dd>
+
+  <dt><bdi>slippage</bdi></dt>
+  <dd>فاصله‌ی قیمتی که انتظار داشتید با قیمتی که واقعاً پر شد. اگر انتظار
+    <bdi>1.10010</bdi> داشتید و سفارش در <bdi>1.10012</bdi> پر شد، ۰.۲ پیپ slippage
+    داشته‌اید.</dd>
+
+  <dt>سوآپ یا رول‌اوور (<bdi>swap / rollover</bdi>)</dt>
+  <dd>هر پوزیشنی که از ساعت <bdi>17:00</bdi> نیویورک (پایان «روز» فارکس) عبور کند، به
+    اندازه‌ی اختلاف نرخ بهره‌ی دو ارز سود یا هزینه می‌گیرد، و بروکر هم کارمزدی کم می‌کند.
+    چهارشنبه سه شب حساب می‌شود، چون تسویه‌ی معامله دو روز کاری بعد است و رول‌اوور
+    چهارشنبه آخر هفته را هم می‌پوشاند. مثال عددی در <a href="#s5-3">بخش ۵.۳</a>.</dd>
+
+  <dt><bdi>carry</bdi></dt>
+  <dd>بازده نگه داشتن ارزی با نرخ بهره‌ی بالاتر در برابر ارزی با نرخ پایین‌تر. سوآپ همان
+    carry منهای کارمزد بروکر است.</dd>
+
+  <dt>نرخ مرجع یا <bdi>fixing</bdi></dt>
+  <dd>یک «عکس» رسمی از قیمت بازار در لحظه‌ای مشخص. ECB هر روز کاری حدود ساعت
+    <bdi>14:15</bdi> فرانکفورت برای هر ارز یک نرخ در برابر یورو اعلام می‌کند و
+    نرخ‌های دلاری با تقسیم ساخته می‌شوند. مثال فرضی: اگر یورو <bdi>161.53</bdi> ین و
+    <bdi>1.0865</bdi> دلار باشد، <bdi>USDJPY = 161.53 / 1.0865 ≈ 148.67</bdi>.</dd>
+
+  <dt>روزهای کاری <bdi>TARGET</bdi></dt>
+  <dd>روزهایی که سامانه‌ی پرداخت یورو باز است. ECB فقط در این روزها نرخ می‌دهد؛ مثلاً
+    اول ژانویه، جمعه‌ی پیش از عید پاک و دوشنبه‌ی پس از آن، اول مه، و ۲۵ و ۲۶ دسامبر نرخی
+    ندارند.</dd>
+
+  <dt>نگاه به آینده (<bdi>look-ahead bias</bdi>)</dt>
+  <dd>استفاده از داده‌ای که در لحظه‌ی تصمیم هنوز وجود نداشته؛ نتیجه را به‌طور ساختگی خوب
+    می‌کند. مثال: تصمیم با fixing ساعت <bdi>14:15</bdi> گرفته شود و معامله هم به همان
+    قیمت پر شود. در واقعیت fixing حدود <bdi>16:00</bdi> منتشر می‌شود و آن قیمت دیگر در
+    دسترس نیست؛ برای همین در fixing روز بعد پر می‌کنیم.</dd>
+
+  <dt>داده‌ی توسعه و <bdi>holdout</bdi></dt>
+  <dd>داده‌ی توسعه برای ساختن و تنظیم استراتژی است. holdout مثل برگه‌ی امتحانی است که
+    سؤال‌هایش را ندیده‌اید؛ اگر با سؤال‌های امتحان درس بخوانید، نمره معنایی ندارد. پس
+    holdout فقط یک بار، در آخر، باز می‌شود.</dd>
+
+  <dt>بیش‌برازش و آزمون‌های متعدد (<bdi>overfitting / multiple testing</bdi>)</dt>
+  <dd>اگر پارامترها را آن‌قدر عوض کنید که روی گذشته عالی شود، احتمالاً نویز را حفظ
+    کرده‌اید، نه الگو را. اگر ۱۰۰ استراتژی کاملاً تصادفی را در سطح معناداری ۵٪ آزمون
+    کنید، به‌طور میانگین ۵ تا «معنادار» به نظر می‌رسند. پیش‌ثبت و شمردن همه‌ی آزمایش‌ها
+    برای مقابله با همین است.</dd>
+
+  <dt>پیش‌ثبت (<bdi>pre-registration</bdi>)</dt>
+  <dd>نوشتن فرضیه، پارامترها، معیارها و شرط قبول/رد، پیش از دیدن نتیجه. مثل اعلام دروازه
+    پیش از شوت: بعد از شوت نمی‌شود دروازه را جابه‌جا کرد.</dd>
+
+  <dt><bdi>walk-forward</bdi></dt>
+  <dd>پارامتر روی یک پنجره‌ی گذشته انتخاب و روی دوره‌ی بعدش آزمون می‌شود، و پنجره جلو
+    می‌رود. مثال: انتخاب روی ۱۹۹۹ تا ۲۰۰۸ و آزمون روی ۲۰۰۹؛ بعد انتخاب روی ۱۹۹۹ تا ۲۰۰۹
+    و آزمون روی ۲۰۱۰؛ و همین‌طور تا ۲۰۲۰.</dd>
+
+  <dt>مومنتوم سری زمانی (<bdi>time-series momentum</bdi>)</dt>
+  <dd>اگر بازده یک جفت در ۱۲ ماه گذشته مثبت بوده، بخر؛ اگر منفی بوده، بفروش.
+    <bdi>Moskowitz</bdi>، <bdi>Ooi</bdi> و <bdi>Pedersen</bdi> (۲۰۱۲) این اثر را در
+    ده‌ها بازار آتی مستند کردند. روی ۷ جفت ما هنوز آزمون نشده؛ این همان فرضیه‌ی فاز ۲
+    است.</dd>
+
+  <dt>حجم‌دهی با هدف نوسان (<bdi>volatility targeting</bdi>)</dt>
+  <dd>اندازه‌ی هر پوزیشن طوری تنظیم می‌شود که ریسکش ثابت بماند. مثال: اگر نوسان سالانه‌ی
+    یک جفت ۸٪ باشد و بخواهیم نوسان پوزیشن <bdi>$4,000</bdi> در سال باشد، ارزش پوزیشن
+    <bdi>$50,000</bdi> می‌شود. اگر نوسان به ۱۶٪ برسد، پوزیشن نصف می‌شود.</dd>
+
+  <dt>نسبت شارپ و سورتینو (<bdi>Sharpe / Sortino</bdi>)</dt>
+  <dd>شارپ یعنی بازده سالانه‌ی مازاد تقسیم بر نوسان سالانه؛ «بازده به ازای هر واحد
+    ریسک». بازده ۶٪ با نوسان ۱۲٪ یعنی شارپ <bdi>0.5</bdi>. سورتینو همین است، ولی فقط
+    نوسان رو به پایین را حساب می‌کند.</dd>
+
+  <dt>بیشینه‌ی افت سرمایه (<bdi>max drawdown</bdi>)</dt>
+  <dd>بزرگ‌ترین سقوط از یک قله تا کف بعدی. اگر سرمایه از <bdi>120,000</bdi> به
+    <bdi>96,000</bdi> برسد، افت ۲۰٪ است. «مدت افت» زمانی است که طول می‌کشد سرمایه دوباره
+    به قله برسد.</dd>
+
+  <dt><bdi>CAGR</bdi></dt>
+  <dd>نرخ رشد مرکب سالانه. اگر <bdi>100,000</bdi> در ۵ سال به <bdi>150,000</bdi> برسد:
+    <bdi>1.5^(1/5) − 1 ≈ 8.4%</bdi> در سال.</dd>
+
+  <dt>نرخ برد و <bdi>profit factor</bdi></dt>
+  <dd>نرخ برد درصد معاملات سودده است. profit factor جمع سودها تقسیم بر جمع زیان‌هاست؛
+    مثلاً <bdi>150,000 / 100,000 = 1.5</bdi>. استراتژی‌های روندی اغلب نرخ برد زیر ۵۰٪
+    دارند، ولی سودهایشان از زیان‌هایشان بزرگ‌تر است.</dd>
+
+  <dt>گردش و کشش هزینه (<bdi>turnover / cost drag</bdi>)</dt>
+  <dd>گردش یعنی در سال چند برابر سرمایه معامله می‌شود. کشش هزینه یعنی هزینه‌ها چقدر از
+    بازده سالانه کم می‌کنند. اگر بازده بدون هزینه ۷٪ و با هزینه ۵٪ باشد، کشش هزینه ۲٪
+    است.</dd>
+
+  <dt>فاصله‌ی اطمینان <bdi>bootstrap</bdi></dt>
+  <dd>بازده‌ها هزاران بار با جایگذاری بازنمونه‌گیری می‌شوند تا ببینیم شارپ فقط از روی
+    شانس چقدر جابه‌جا می‌شود. اگر بازه‌ی ۹۵٪ از <bdi>−0.1</bdi> تا <bdi>0.9</bdi> باشد،
+    صفر داخلش است و نتیجه قانع‌کننده نیست.</dd>
+
+  <dt>آماره‌ی <bdi>t</bdi></dt>
+  <dd>فاصله‌ی نتیجه از صفر بر حسب «اندازه‌ی نویز». برای شارپ سالانه تقریباً
+    <bdi>t ≈ Sharpe × √years</bdi>؛ شارپ <bdi>0.5</bdi> در ۱۶ سال یعنی
+    <bdi>t ≈ 2</bdi>.</dd>
+
+  <dt><bdi>deflated Sharpe ratio</bdi></dt>
+  <dd>شارپی که برای تعداد آزمایش‌ها و غیرنرمال بودن بازده‌ها اصلاح شده. وقتی بهترینِ
+    چند آزمایش را انتخاب می‌کنیم، بخشی از شارپش شانس است و این معیار آن بخش را کم
+    می‌کند.</dd>
+
+  <dt>تست فشار هزینه</dt>
+  <dd>همه‌ی هزینه‌ها دو یا سه برابر می‌شوند. استراتژی‌ای که فقط با هزینه‌ی خوش‌بینانه
+    سودده است، شکننده است.</dd>
+
+  <dt>تست فوروارد دمو و شبیه‌سازی سایه</dt>
+  <dd>سیستم چند ماه روی حساب دمو با داده‌ی واقعاً تازه اجرا می‌شود. هم‌زمان موتور بک‌تست
+    روی همان روزها اجرا می‌شود؛ فاصله‌ی این دو، مشکلات اجرایی را نشان می‌دهد.</dd>
+
+  <dt><bdi>kill switch</bdi> و فیوز افت سرمایه</dt>
+  <dd>توقف خودکار معاملات وقتی افت سرمایه از قله از حد تعیین‌شده بیشتر شود، یا توقف با یک
+    دستور دستی.</dd>
+</dl>
+</section>
+
+<!-- ============================================================ -->
+<section id="s8">
+<h2>۸. خودت بررسی کن</h2>
+
+<h3>۸.۱ دیدن یافته‌ها روی سرور</h3>
+<pre><code>cd /root/hermes/AiTrading
+git reflog | head -12                          # the reset and the old commits
+git log --oneline 8168adc | wc -l              # 72 old commits
+git status --short --ignored                   # leftovers of the previous project
+du -sh data .venv .hypothesis src tests        # their sizes
+git show 8168adc:reports/TM1-sources.md | less # previous data-terms report
+free -h; df -h /                               # memory and disk</code></pre>
+
+<h3>۸.۲ شرایط استفاده را خودتان بخوانید</h3>
+<ul>
+  <li><bdi>Dukascopy</bdi>: <a href="https://www.dukascopy.com/swiss/english/legal-pages/terms-of-use/"><bdi>dukascopy.com/…/terms-of-use</bdi></a></li>
+  <li><bdi>ECB</bdi>: <a href="https://www.ecb.europa.eu/home/disclaimer/html/index.en.html"><bdi>ecb.europa.eu/…/disclaimer</bdi></a></li>
+  <li><bdi>BIS</bdi>: <a href="https://www.bis.org/terms_statistics.htm"><bdi>bis.org/terms_statistics.htm</bdi></a></li>
+</ul>
+
+<h3>۸.۳ چک دسترسی از لپ‌تاپ (پیش از مرحله‌ی ۱.۱)</h3>
+<p>
+  این دو دستور را روی لپ‌تاپ، با اتصال مستقیم و بدون پروکسی یا تونل، اجرا کنید تا
+  معلوم شود ECB و BIS دسترسی از کشور شما را بسته‌اند یا نه:
+</p>
+<pre><code>curl -s -o /dev/null -w "ECB %{http_code}\n" "https://data-api.ecb.europa.eu/service/data/EXR/D.USD.EUR.SP00.A?lastNObservations=1&amp;format=csvdata"
+curl -s -o /dev/null -w "BIS %{http_code}\n" "https://stats.bis.org/api/v1/data/WS_CBPOL/D.US?lastNObservations=1&amp;format=csv"</code></pre>
+<ul>
+  <li><bdi>200</bdi>: آزاد است.</li>
+  <li><bdi>403</bdi> یا <bdi>451</bdi>: خود سرویس‌دهنده دسترسی را بسته؛ طبق قاعده‌ی ۱۵ استفاده ممنوع است.</li>
+  <li>خطای زمان یا DNS: مشکل از شبکه‌ی داخلی است، نه از سرویس‌دهنده؛ استفاده از طریق سرور مجاز است.</li>
+</ul>
+
+<h3>۸.۴ فهرست بازبینی شما</h3>
+<ul class="check">
+  <li>جدول تصمیم‌ها (بخش ۵.۱) با پاسخ‌های شما می‌خواند.</li>
+  <li>اعداد پروفایل هزینه‌ی A به‌عنوان حدس اولیه قابل قبول‌اند.</li>
+  <li>پیامدهای ECB قابل قبول‌اند: فقط قیمت بسته‌شدن، و اجرای زنده حدود <bdi>14:15</bdi> فرانکفورت به‌جای <bdi>17:00</bdi> نیویورک.</li>
+  <li>روش بایگانی: انتقال، تگ و bundle؛ فقط کش‌ها و <code>.venv</code> حذف می‌شوند.</li>
+  <li>متن قاعده‌ی ۱۵ و دور نگه داشتن جزئیات شخصی از مخزن.</li>
+  <li>ساختار <code>PROGRESS.md</code> (بخش ۳.۳).</li>
+  <li>ظاهر همین سند به‌عنوان پیش‌نمایش قالب گزارش‌ها (قالب نهایی در ۰.۳ تأیید می‌شود).</li>
+</ul>
+</section>
+
+<!-- ============================================================ -->
+<section id="s9">
+<h2>۹. قدم بعدی و سؤال‌های باز</h2>
+<p>
+  <strong>آنچه الان از شما لازم است:</strong> تأیید این برنامه در چت، یا هر تغییری که
+  می‌خواهید. بعد از تأیید، مرحله‌ی ۰.۱ (بخش ۳) اجرا می‌شود، commit می‌شود، و کار متوقف
+  می‌شود؛ سپس برنامه‌ی مرحله‌ی ۰.۲ را می‌فرستم.
+</p>
+<h3>سؤال‌های باز</h3>
+<ol>
+  <li><strong>چک دسترسی از لپ‌تاپ</strong> (بخش ۸.۳)؛ پیش از مرحله‌ی ۱.۱ لازم است.</li>
+  <li><strong>سیاست push:</strong> بعد از commit هر مرحله push کنم تا با
+    <code>git pull</code> گزارش‌ها را روی لپ‌تاپ بخوانید؟ پیشنهاد من: بله، ولی تگ
+    archive هرگز.</li>
+  <li><strong>قالب برنامه‌ها:</strong> برنامه‌ی مرحله‌های بعد هم مثل این سند به‌صورت HTML
+    فارسی بیاید؟ پیشنهاد من: بله، چون فارسی در ترمینال خوب نمایش داده نمی‌شود.</li>
+  <li><strong>شکاف‌های نرخ بهره‌ی ژاپن</strong> در BIS؛ قاعده‌اش در ۱.۳ تعیین می‌شود.</li>
+  <li><strong>شواهد اسپرد تاریخی</strong> (پیش از ۲۰۰۸ بازتر بود)؛ در ۱.۳ جمع می‌شود.</li>
+  <li><strong>بروکر فاز ۳</strong> باید صریحاً ساکنان کشور شما را بپذیرد؛ در ۳.۱.</li>
+</ol>
+</section>
+
+<footer>
+  <div>ساخته‌شده: <bdi>2026-10-03 11:06 UTC</bdi> · <bdi>2026-10-03 14:36 Asia/Tehran</bdi></div>
+  <div>بر پایه‌ی کامیت <code>123c4fe</code>؛ این فایل در کامیت بعدی اضافه می‌شود.</div>
+  <div>داده‌ی بارگذاری‌شده: هنوز هیچ · آزمایش‌ها تا امروز: ۰</div>
+  <div>منابع یافته‌ها: دستورهای اجراشده روی سرور در همین روز، و <code>CLAUDE.md</code> و <code>reports/TM1-sources.md</code> در کامیت <code>8168adc</code>.</div>
+</footer>
+
+</main>
+</body>
+</html>
